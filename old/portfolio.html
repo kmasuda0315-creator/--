@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Y.T. — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#1a1814;
+  --paper:#f5f0e8;
+  --cream:#ede8dc;
+  --amber:#b8843a;
+  --amber-l:#d4a85a;
+  --amber-glow:#c9923f;
+  --muted:#8a8278;
+  --deep:#2c2720;
+  --hero-bg:#0e0c0a;
+  --hero-mid:#161210;
+  --border:#d4cfc4;
+  --border-l:rgba(212,207,196,0.4);
+  --border-d:rgba(255,255,255,0.07);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor{
+  position:fixed;pointer-events:none;z-index:9999;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--amber-glow);
+  transform:translate(-50%,-50%);
+  transition:transform .08s ease, opacity .3s;
+  mix-blend-mode:screen;
+}
+.cursor-ring{
+  position:fixed;pointer-events:none;z-index:9998;
+  width:28px;height:28px;border-radius:50%;
+  border:0.5px solid rgba(184,132,58,0.45);
+  transform:translate(-50%,-50%);
+  transition:transform .18s ease, width .25s, height .25s, opacity .3s;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.1rem 3rem;
+  background:rgba(14,12,10,0.82);
+  backdrop-filter:blur(18px);
+  border-bottom:0.5px solid var(--border-d);
+  transition:background .4s;
+}
+nav.scrolled{background:rgba(14,12,10,0.96)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;letter-spacing:0.06em;color:rgba(245,240,232,0.88)}
+.nav-links{display:flex;gap:2.2rem}
+.nav-links a{font-size:0.72rem;letter-spacing:0.13em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-decoration:none;transition:color .25s}
+.nav-links a:hover{color:var(--amber-l)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:8rem 3rem 5rem;
+  position:relative;overflow:hidden;
+  background:var(--hero-bg);
+}
+
+/* noise texture overlay */
+.hero::after{
+  content:'';
+  position:absolute;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+  opacity:0.028;
+  pointer-events:none;
+}
+
+/* ambient glow orbs */
+.hero-orb{
+  position:absolute;border-radius:50%;pointer-events:none;
+  filter:blur(90px);z-index:0;
+}
+.hero-orb-1{
+  width:520px;height:520px;
+  top:-10%;right:-8%;
+  background:radial-gradient(circle, rgba(184,132,58,0.18) 0%, transparent 70%);
+  animation:orbFloat1 12s ease-in-out infinite;
+}
+.hero-orb-2{
+  width:340px;height:340px;
+  bottom:5%;left:30%;
+  background:radial-gradient(circle, rgba(184,132,58,0.08) 0%, transparent 70%);
+  animation:orbFloat2 16s ease-in-out infinite;
+}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,25px) scale(1.06)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-18px)}}
+
+/* rings — parallax targets */
+.hero-ring{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:1;
+}
+.hero-ring-1{
+  width:420px;height:420px;
+  top:18%;right:6%;
+  border:0.5px solid rgba(184,132,58,0.2);
+}
+.hero-ring-2{
+  width:280px;height:280px;
+  top:26%;right:13%;
+  border:0.5px solid rgba(184,132,58,0.12);
+}
+.hero-ring-3{
+  width:160px;height:160px;
+  top:34%;right:20%;
+  border:0.5px solid rgba(212,168,90,0.25);
+  animation:ringPulse 4s ease-in-out infinite;
+}
+@keyframes ringPulse{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.55;transform:scale(1.03)}}
+
+/* horizontal rule accent */
+.hero-line{
+  position:absolute;left:0;top:50%;
+  width:100%;height:0.5px;
+  background:linear-gradient(90deg, transparent, rgba(184,132,58,0.07) 40%, rgba(184,132,58,0.12) 60%, transparent);
+  z-index:0;pointer-events:none;
+}
+
+.hero-content{position:relative;z-index:2;max-width:600px}
+
+/* eyebrow — reveal animation */
+.hero-eyebrow{
+  font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:1.4rem;
+  display:flex;align-items:center;gap:0.8rem;
+  opacity:0;animation:revealUp .8s cubic-bezier(.22,1,.36,1) .2s forwards;
+}
+.hero-eyebrow::before{content:'';width:2.4rem;height:0.5px;background:linear-gradient(90deg,transparent,var(--amber))}
+
+/* h1 — line by line reveal */
+h1.display{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3rem,7vw,5.2rem);
+  font-weight:300;line-height:1.12;
+  letter-spacing:-0.01em;
+  color:rgba(245,240,232,0.93);
+  margin-bottom:1.6rem;
+  overflow:hidden;
+}
+h1.display em{
+  font-style:italic;
+  background:linear-gradient(135deg,var(--amber) 0%,var(--amber-l) 60%,#e8b96a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 18px rgba(184,132,58,0.35));
+}
+.display-line{
+  display:block;overflow:hidden;
+}
+.display-line span{
+  display:block;
+  opacity:0;transform:translateY(100%);
+}
+.display-line:nth-child(1) span{animation:lineReveal .9s cubic-bezier(.22,1,.36,1) .35s forwards}
+.display-line:nth-child(2) span{animation:lineReveal .9s cubic-bezier(.22,1,.36,1) .5s forwards}
+
+@keyframes lineReveal{to{opacity:1;transform:translateY(0)}}
+@keyframes revealUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-desc{
+  font-size:0.91rem;color:rgba(245,240,232,0.42);line-height:1.95;
+  max-width:460px;margin-bottom:2.2rem;font-weight:300;
+  opacity:0;animation:revealUp .8s cubic-bezier(.22,1,.36,1) .7s forwards;
+}
+
+.hero-chips{
+  display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:2.4rem;
+  opacity:0;animation:revealUp .8s cubic-bezier(.22,1,.36,1) .85s forwards;
+}
+.chip{
+  font-size:0.67rem;letter-spacing:0.08em;text-transform:uppercase;
+  padding:0.28rem 0.8rem;
+  border:0.5px solid rgba(184,132,58,0.22);
+  color:rgba(245,240,232,0.32);
+  transition:all .3s;cursor:default;
+  background:rgba(184,132,58,0.04);
+}
+.chip:hover{
+  border-color:rgba(184,132,58,0.6);
+  color:var(--amber-l);
+  background:rgba(184,132,58,0.08);
+  box-shadow:0 0 12px rgba(184,132,58,0.12);
+}
+
+.hero-cta{
+  display:inline-flex;align-items:center;gap:0.55rem;
+  font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(245,240,232,0.55);text-decoration:none;
+  border-bottom:0.5px solid rgba(245,240,232,0.2);padding-bottom:3px;
+  transition:all .3s;
+  opacity:0;animation:revealUp .8s cubic-bezier(.22,1,.36,1) 1s forwards;
+}
+.hero-cta:hover{
+  color:var(--amber-l);
+  border-color:rgba(184,132,58,0.5);
+  text-shadow:0 0 20px rgba(184,132,58,0.3);
+}
+
+/* scroll indicator */
+.hero-scroll{
+  position:absolute;bottom:2.5rem;left:3rem;z-index:2;
+  display:flex;align-items:center;gap:0.7rem;
+  font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:rgba(255,255,255,0.18);
+  opacity:0;animation:revealUp .8s ease 1.3s forwards;
+}
+.hero-scroll-line{
+  width:2.5rem;height:0.5px;
+  background:linear-gradient(90deg,rgba(184,132,58,0.5),transparent);
+  animation:scrollPulse 2.5s ease-in-out infinite;
+}
+@keyframes scrollPulse{0%,100%{transform:scaleX(1);opacity:0.5}50%{transform:scaleX(1.3);opacity:1}}
+
+/* ── SECTION SHELL ── */
+section{padding:6rem 3rem}
+.s-label{
+  font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:0.8rem;
+  display:flex;align-items:center;gap:0.7rem;
+}
+.s-label::before{content:'';width:1.8rem;height:0.5px;background:var(--amber);opacity:0.6}
+h2.s-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.9rem,3.8vw,2.8rem);font-weight:300;
+  line-height:1.2;margin-bottom:0.6rem;
+}
+.s-rule{width:2.5rem;height:0.5px;margin-bottom:3rem}
+
+/* ── ABOUT ── */
+.about{background:#0e0c0a;position:relative;overflow:hidden}
+.about::before{
+  content:'';position:absolute;top:-200px;right:-150px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,132,58,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.about .s-label{color:var(--amber-l)}
+.about h2.s-title{color:rgba(245,240,232,0.92)}
+.about .s-rule{background:rgba(255,255,255,0.1)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.about-prose p{
+  font-family:'Noto Serif JP',serif;
+  font-size:0.9rem;line-height:2.1;
+  color:rgba(245,240,232,0.58);
+  margin-bottom:1.4rem;font-weight:300;
+}
+.about-prose p b{
+  color:var(--amber-l);font-weight:400;
+  text-shadow:0 0 20px rgba(184,132,58,0.25);
+}
+.kv-block{
+  border:0.5px solid rgba(255,255,255,0.07);
+  padding:1.8rem;margin-bottom:1rem;
+  background:rgba(255,255,255,0.02);
+  transition:border-color .3s, background .3s;
+}
+.kv-block:hover{
+  border-color:rgba(184,132,58,0.2);
+  background:rgba(184,132,58,0.03);
+}
+.kv-head{font-size:0.61rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber-l);margin-bottom:1rem;opacity:0.8}
+.kv{display:flex;justify-content:space-between;align-items:baseline;padding:0.55rem 0;border-bottom:0.5px solid rgba(255,255,255,0.05);font-size:0.82rem}
+.kv:last-child{border:none;padding-bottom:0}
+.kv .k{color:rgba(245,240,232,0.28);font-size:0.75rem;letter-spacing:0.04em}
+.kv .v{color:rgba(245,240,232,0.75)}
+
+/* ── WORK ── */
+.work{background:#121009;position:relative}
+.work .s-label{color:var(--amber)}
+.work h2.s-title{color:rgba(245,240,232,0.9)}
+.work .s-rule{background:rgba(255,255,255,0.1)}
+.work-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.06)}
+.wcard{
+  padding:2.2rem 1.8rem;
+  background:#121009;
+  position:relative;overflow:hidden;
+  transition:background .4s;
+}
+.wcard::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,var(--amber),transparent);
+  transform:scaleY(0);transform-origin:center;transition:transform .5s cubic-bezier(.22,1,.36,1);
+}
+.wcard::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 0% 50%,rgba(184,132,58,0.06) 0%,transparent 60%);
+  opacity:0;transition:opacity .4s;
+}
+.wcard:hover::before{transform:scaleY(1)}
+.wcard:hover::after{opacity:1}
+.wcard:hover{background:#16120e}
+.wcard-num{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:1.4rem;font-weight:300;
+  color:rgba(184,132,58,0.5);
+  margin-bottom:1.1rem;
+  transition:color .3s;
+}
+.wcard:hover .wcard-num{color:var(--amber-l)}
+.wcard h3{font-size:0.82rem;font-weight:400;color:rgba(245,240,232,0.8);margin-bottom:0.7rem;letter-spacing:0.02em}
+.wcard p{font-size:0.78rem;color:rgba(245,240,232,0.38);line-height:1.8}
+.wcard-tags{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:1.2rem}
+.wtag{
+  font-size:0.61rem;letter-spacing:0.06em;
+  padding:0.18rem 0.6rem;
+  border:0.5px solid rgba(184,132,58,0.18);
+  color:rgba(184,132,58,0.55);
+  transition:all .25s;
+}
+.wcard:hover .wtag{border-color:rgba(184,132,58,0.35);color:rgba(184,132,58,0.8)}
+
+/* ── HOBBY ── */
+.hobby{background:#0a0908;position:relative;overflow:hidden}
+.hobby::after{
+  content:'';position:absolute;bottom:-100px;left:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,132,58,0.05) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hobby .s-label{color:var(--amber)}
+.hobby h2.s-title{color:rgba(245,240,232,0.9)}
+.hobby .s-rule{background:rgba(255,255,255,0.1)}
+.hobby-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem}
+.hblock{margin-bottom:2.5rem;padding-bottom:2.5rem;border-bottom:0.5px solid rgba(255,255,255,0.05)}
+.hblock:last-child{margin-bottom:0;padding-bottom:0;border:none}
+.hblock-label{
+  font-size:0.61rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:1rem;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.hblock-label::after{content:'';flex:1;height:0.5px;background:rgba(184,132,58,0.18)}
+.hblock h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;font-weight:300;
+  color:rgba(245,240,232,0.88);margin-bottom:0.8rem;
+  line-height:1.3;
+}
+.hblock p{font-size:0.83rem;color:rgba(245,240,232,0.42);line-height:1.9}
+.hblock p b{color:var(--amber-l);font-weight:400}
+.music-list{margin-top:1.1rem}
+.mitem{
+  display:flex;align-items:center;gap:0.8rem;
+  padding:0.5rem 0;border-bottom:0.5px solid rgba(255,255,255,0.05);
+  font-size:0.8rem;color:rgba(245,240,232,0.5);
+  transition:color .25s, padding-left .25s;
+}
+.mitem:hover{color:var(--amber-l);padding-left:0.3rem}
+.mitem:last-child{border:none}
+.mdot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--amber);flex-shrink:0;
+  box-shadow:0 0 6px rgba(184,132,58,0.5);
+}
+
+/* ── INTEREST ── */
+.interest{background:#0e0c0a}
+.interest .s-label{color:var(--amber)}
+.interest h2.s-title{color:rgba(245,240,232,0.9)}
+.interest .s-rule{background:rgba(255,255,255,0.1)}
+.interest-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);margin-bottom:1px}
+.icard{
+  padding:2rem 1.7rem;
+  background:#0e0c0a;
+  position:relative;overflow:hidden;
+  transition:background .35s;
+}
+.icard::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,132,58,0.3),transparent);
+  transform:scaleX(0);transition:transform .5s cubic-bezier(.22,1,.36,1);
+}
+.icard:hover::before{transform:scaleX(1)}
+.icard:hover{background:#131109}
+.icard-badge{
+  display:inline-block;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.18rem 0.6rem;
+  border:0.5px solid rgba(184,132,58,0.25);
+  color:rgba(184,132,58,0.6);
+  margin-bottom:1.1rem;
+}
+.icard h3{font-size:0.84rem;font-weight:400;color:rgba(245,240,232,0.78);margin-bottom:0.7rem}
+.icard p{font-size:0.78rem;color:rgba(245,240,232,0.38);line-height:1.8}
+.icard p b{color:var(--amber-l);font-weight:400}
+.interest-note{
+  padding:1.8rem 2rem;
+  background:rgba(184,132,58,0.04);
+  border:0.5px solid rgba(184,132,58,0.12);
+  display:flex;align-items:center;gap:1.8rem;
+}
+.interest-note-icon{
+  font-size:1rem;color:var(--amber);flex-shrink:0;
+  opacity:0.7;
+}
+.interest-note p{font-size:0.83rem;color:rgba(245,240,232,0.45);line-height:1.85}
+.interest-note p b{color:rgba(245,240,232,0.78);font-weight:400}
+
+/* ── HISTORY ── */
+.history{background:#0a0908;position:relative;overflow:hidden}
+.history::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,132,58,0.04) 0%,transparent 65%);
+  pointer-events:none;
+}
+.history .s-label{color:var(--amber-l)}
+.history h2.s-title{color:rgba(245,240,232,0.92)}
+.history .s-rule{background:rgba(255,255,255,0.1)}
+.era-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.05)}
+.era-card{
+  padding:2.2rem 2rem;
+  background:#0a0908;
+  position:relative;overflow:hidden;
+  transition:background .4s;
+}
+.era-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,var(--amber),rgba(184,132,58,0.2),transparent);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .55s cubic-bezier(.22,1,.36,1);
+}
+.era-card:hover::before{transform:scaleX(1)}
+.era-card:hover{background:#0f0d0b}
+.era-card:hover .era-num{color:rgba(255,255,255,0.1);text-shadow:0 0 40px rgba(184,132,58,0.15)}
+.era-num{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:4rem;font-weight:300;line-height:1;
+  color:rgba(255,255,255,0.05);
+  position:absolute;top:1.2rem;right:1.6rem;
+  user-select:none;pointer-events:none;
+  transition:color .4s, text-shadow .4s;
+}
+.era-period{
+  font-size:0.61rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(184,132,58,0.6);margin-bottom:0.5rem;
+}
+.era-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;font-weight:300;
+  color:rgba(245,240,232,0.85);
+  margin-bottom:1.2rem;line-height:1.35;
+}
+.era-items{list-style:none;padding:0;margin:0}
+.era-items li{
+  font-size:0.8rem;color:rgba(245,240,232,0.48);
+  line-height:1.8;padding:0.42rem 0 0.42rem 1rem;
+  border-bottom:0.5px solid rgba(255,255,255,0.04);
+  position:relative;
+  transition:color .25s, padding-left .25s;
+}
+.era-items li:hover{color:rgba(245,240,232,0.75);padding-left:1.3rem}
+.era-items li::before{
+  content:'';position:absolute;left:0;top:0.95rem;
+  width:3px;height:3px;border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 5px rgba(184,132,58,0.5);
+}
+.era-items li:last-child{border:none}
+.era-items li b{color:rgba(245,240,232,0.88);font-weight:400}
+.era-highlight{
+  display:inline-block;margin-top:1.1rem;
+  font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;
+  padding:0.2rem 0.65rem;
+  border:0.5px solid rgba(184,132,58,0.2);
+  color:rgba(184,132,58,0.55);
+}
+.era-card.full-width{grid-column:1/-1}
+
+/* legacy */
+.timeline{display:none}
+
+/* ── CONTACT ── */
+.contact{background:#0e0c0a;position:relative;overflow:hidden}
+.contact::before{
+  content:'';position:absolute;bottom:-200px;right:-100px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,132,58,0.06) 0%,transparent 65%);
+  pointer-events:none;
+}
+.contact .s-label{color:var(--amber)}
+.contact h2.s-title{color:rgba(245,240,232,0.9)}
+.contact .s-rule{background:rgba(255,255,255,0.1)}
+.contact-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem}
+.contact-quote{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.4rem;font-weight:300;font-style:italic;
+  color:rgba(245,240,232,0.35);line-height:1.8;
+  max-width:480px;margin-top:1rem;
+}
+.contact-right{text-align:right}
+.contact-mail{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;font-weight:300;
+  color:var(--amber-l);letter-spacing:0.04em;
+  text-decoration:none;display:block;
+  border-bottom:0.5px solid rgba(184,132,58,0.3);
+  padding-bottom:3px;margin-bottom:0.5rem;
+  transition:all .3s;
+}
+.contact-mail:hover{
+  color:#e8c070;
+  border-color:rgba(184,132,58,0.7);
+  text-shadow:0 0 25px rgba(184,132,58,0.4);
+}
+.contact-note{font-size:0.7rem;color:rgba(245,240,232,0.22);letter-spacing:0.05em}
+
+/* ── FOOTER ── */
+footer{
+  padding:1.4rem 3rem;
+  border-top:0.5px solid rgba(255,255,255,0.06);
+  display:flex;justify-content:space-between;
+  background:#0a0908;
+}
+footer p{font-size:0.7rem;color:rgba(245,240,232,0.2);letter-spacing:0.05em}
+
+/* ── SCROLL REVEAL ── */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .85s cubic-bezier(.22,1,.36,1), transform .85s cubic-bezier(.22,1,.36,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+.reveal-delay-5{transition-delay:.5s}
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav id="mainNav">
+  <div class="nav-logo">Y.T. — Portfolio</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#work">Work</a>
+    <a href="#hobby">Hobby</a>
+    <a href="#interest">Interest</a>
+    <a href="#history">History</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-ring hero-ring-1" id="ring1"></div>
+  <div class="hero-ring hero-ring-2" id="ring2"></div>
+  <div class="hero-ring hero-ring-3" id="ring3"></div>
+  <div class="hero-line"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">ITコンサルタント ／ 夜型インドア派</div>
+    <h1 class="display">
+      <span class="display-line"><span>計画型だけど、</span></span>
+      <span class="display-line"><span><em>週末はだらける。</em></span></span>
+    </h1>
+    <p class="hero-desc">
+      仕事では経理システムとAIを設計し、帰宅したら音楽を流して部屋を整える。<br>
+      効率とゆるさ、両方ないと生きていけないタイプです。
+    </p>
+    <div class="hero-chips">
+      <span class="chip">会計 × IT</span>
+      <span class="chip">AI Agent</span>
+      <span class="chip">indigo la End</span>
+      <span class="chip">インテリア沼</span>
+      <span class="chip">夜型</span>
+    </div>
+    <a href="#about" class="hero-cta">もう少し知ってみる →</a>
+  </div>
+
+  <div class="hero-scroll">
+    <span class="hero-scroll-line"></span>
+    scroll
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="s-label reveal">00 — Who I am</div>
+  <h2 class="s-title reveal reveal-delay-1">「効率」と「ゆるさ」、<br>どっちも本当の私です。</h2>
+  <div class="s-rule reveal reveal-delay-2"></div>
+  <div class="about-grid">
+    <div class="about-prose reveal reveal-delay-2">
+      <p>計画を立てるのが好きで、資格勉強にも妙なやる気が出る。<b>でも週末は、平気で何もしない。</b>そのギャップが自分らしいと思っています。</p>
+      <p>夜型のインドア派で、お気に入りの空間と音楽さえあれば、だいたい機嫌よくいられます。人間模様のある物語にすぐ引き込まれて、気づいたら深夜2時——というのもよくある話。</p>
+      <p>仕事とプライベートでオンオフが割とはっきりしていて、<b>「仕事中は緻密、帰ったらのんびり」</b>が心地よいペースです。</p>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div class="kv-block">
+        <div class="kv-head">基本情報</div>
+        <div class="kv"><span class="k">活動時間</span><span class="v">夜型（深夜が一番集中できる）</span></div>
+        <div class="kv"><span class="k">タイプ</span><span class="v">インドア派</span></div>
+        <div class="kv"><span class="k">性格</span><span class="v">計画型 × 週末はだらける</span></div>
+        <div class="kv"><span class="k">エネルギー源</span><span class="v">好きな空間に籠もること</span></div>
+      </div>
+      <div class="kv-block">
+        <div class="kv-head">今やっていること</div>
+        <div class="kv"><span class="k">仕事</span><span class="v">AI Agent 要件定義</span></div>
+        <div class="kv"><span class="k">勉強</span><span class="v">英語 / 公認会計士</span></div>
+        <div class="kv"><span class="k">部屋</span><span class="v">書斎改造計画、進行中</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <div class="s-label reveal">01 — Work</div>
+  <h2 class="s-title reveal reveal-delay-1">仕事のこと。</h2>
+  <div class="s-rule reveal reveal-delay-2"></div>
+  <div class="work-cards">
+    <div class="wcard reveal reveal-delay-2">
+      <div class="wcard-num">Ⅰ</div>
+      <h3>ITコンサルタント（会計 × IT）</h3>
+      <p>企業の経理システムの運用・改善を担当。数字の意味と業務フローを両方わかっているのが自分の強みだと思っています。</p>
+      <div class="wcard-tags">
+        <span class="wtag">ERP</span>
+        <span class="wtag">経理システム</span>
+        <span class="wtag">業務改善</span>
+        <span class="wtag">要件定義</span>
+      </div>
+    </div>
+    <div class="wcard reveal reveal-delay-3">
+      <div class="wcard-num">Ⅱ</div>
+      <h3>AIエージェント設計（今ここ）</h3>
+      <p>「人が判断していた仕事をどこまでAIに任せられるか」を毎日考えています。現場を知っているからこそ描ける設計図があると信じています。</p>
+      <div class="wcard-tags">
+        <span class="wtag">AI Agent</span>
+        <span class="wtag">LLM活用</span>
+        <span class="wtag">業務自動化</span>
+        <span class="wtag">PoC</span>
+      </div>
+    </div>
+    <div class="wcard reveal reveal-delay-4">
+      <div class="wcard-num">Ⅲ</div>
+      <h3>コツコツ型の学習力</h3>
+      <p>資格勉強が割と好きです。簿記2級・基本情報技術者試験・ITパスポート・MOS ExcelなどIT×会計領域の資格を計画的に取得。目標から逆算して積み上げるのが性に合っています。</p>
+      <div class="wcard-tags">
+        <span class="wtag">簿記2級</span>
+        <span class="wtag">基本情報</span>
+        <span class="wtag">MOS Excel</span>
+        <span class="wtag">TOEIC 815</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOBBY -->
+<section class="hobby" id="hobby">
+  <div class="s-label reveal">02 — Hobby</div>
+  <h2 class="s-title reveal reveal-delay-1">趣味のこと。</h2>
+  <div class="s-rule reveal reveal-delay-2"></div>
+  <div class="hobby-grid">
+    <div>
+      <div class="hblock reveal reveal-delay-2">
+        <div class="hblock-label">Interior</div>
+        <h3>部屋を整えること。</h3>
+        <p>Ankerのスピーカーで音楽を流して、ウッディ系のアロマを焚いて、ヘデラを育てる。「居心地のいい空間を作ること」自体がいちばんの趣味かもしれません。何もしない休日も、整った部屋の中だと贅沢に感じられます。</p>
+      </div>
+      <div class="hblock reveal reveal-delay-3">
+        <div class="hblock-label">Content</div>
+        <h3>人間模様のある物語が好き。</h3>
+        <p>ラブトラ、バチェロレッテ、オフラインラブ——人の感情がぶつかる瞬間にどうしても引き込まれます。YouTubeは「雷獣」「とにかく売れたい中華料理屋」がお気に入り。河野ゆかりの自己管理術も最近ハマっています。</p>
+      </div>
+    </div>
+    <div>
+      <div class="hblock reveal reveal-delay-3">
+        <div class="hblock-label">Music</div>
+        <h3>聴くだけじゃ足りなくて、歌い始めた。</h3>
+        <p>心地よいメロディと、少し内省的な世界観が好きです。大学時代は毎日カラオケに通う時期もあり、中学の頃に断念したギターを独学で再挑戦して弾き語りを開始。カラオケ動画をYouTubeに投稿し、<b>単体30万回・総合100万回再生</b>を達成しました。夜、アロマを焚きながら弾くのが最高の時間。</p>
+        <div class="music-list">
+          <div class="mitem"><span class="mdot"></span>indigo la End</div>
+          <div class="mitem"><span class="mdot"></span>レトロリロン</div>
+          <div class="mitem"><span class="mdot"></span>Kiichi</div>
+          <div class="mitem"><span class="mdot"></span>Penthouse</div>
+          <div class="mitem"><span class="mdot"></span>菊池諒真</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEREST -->
+<section class="interest" id="interest">
+  <div class="s-label reveal">03 — Interest</div>
+  <h2 class="s-title reveal reveal-delay-1">最近興味があること。</h2>
+  <div class="s-rule reveal reveal-delay-2"></div>
+  <div class="interest-grid">
+    <div class="icard reveal reveal-delay-2">
+      <span class="icard-badge">Career</span>
+      <h3>公認会計士の取得（会計 × IT × AI）</h3>
+      <p>数値の集計やAIに代替される作業ではなく、「財務諸表の数値」×「現場の声」の両軸をシステム・AIで分析する業務コンサルへ。机上のデータだけでなく、<b>現場に足を運んでリアルな声と数字のギャップを埋める</b>存在になりたい。</p>
+    </div>
+    <div class="icard reveal reveal-delay-3">
+      <span class="icard-badge">Creative</span>
+      <h3>AIを使った作曲（聴くから「作る」へ）</h3>
+      <p>好きな音楽の傾向は、繊細さの中に力強さがある楽曲。indigo la End、レトロリロン、Kiichi、Penthouse、菊池諒真あたりが近い。<b>身内ではなく、匿名の誰かに純粋な音だけで届けたい。</b></p>
+    </div>
+    <div class="icard reveal reveal-delay-4">
+      <span class="icard-badge">Body</span>
+      <h3>健康的な身体（ランニング × Salomon）</h3>
+      <p>Salomonのアクティブスキンを背負って週末ランニング中。ネット検索では見つからない景色や路地を発見するたびに、<b>視界が色鮮やかになる感覚</b>がある。まずは継続して、身体的なセルフイメージを刷新したい。</p>
+    </div>
+  </div>
+  <div class="interest-note reveal reveal-delay-5">
+    <div class="interest-note-icon" style="font-size:1.1rem;font-style:normal;">—</div>
+    <p>一見バラバラに見えるけれど、共通の軸は<b>「デジタル・テクノロジー」×「生身のリアル（現場・身体・感性）」</b>の掛け合わせ。既存の価値観を壊して、次のステージへ向かっている途中です。</p>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="history" id="history">
+  <div class="s-label reveal">04 — History</div>
+  <h2 class="s-title reveal reveal-delay-1">自分史、ちゃんと書いてみた。</h2>
+  <div class="s-rule reveal reveal-delay-2"></div>
+  <div class="era-grid">
+
+    <div class="era-card reveal reveal-delay-2">
+      <div class="era-num">01</div>
+      <div class="era-period">Elementary School</div>
+      <div class="era-title">中学受験と、絵と水泳と。</div>
+      <ul class="era-items">
+        <li>くもん・成基学園で<b>中学受験を経験</b>。算数が得意で、論理的に解く楽しさに気づく。</li>
+        <li>小1〜小5まで<b>水泳を習う</b>。サッカーも少し経験。</li>
+        <li>絵を描くことが好きで、学校図書館にイラストを提出したり、上手い人に教えてもらったり。<b>絵画コンテストに2回入賞。</b></li>
+      </ul>
+      <span class="era-highlight">好奇心 × 努力の原型</span>
+    </div>
+
+    <div class="era-card reveal reveal-delay-3">
+      <div class="era-num">02</div>
+      <div class="era-period">Junior High School</div>
+      <div class="era-title">野球部と、ゲームと、ギターへの憧れ。</div>
+      <ul class="era-items">
+        <li>野球部に入部。ポジションは<b>セカンド</b>。</li>
+        <li>パズドラ・モンスト・スプラトゥーンと<b>ゲームに本気で没頭</b>した時代。</li>
+        <li>ギターに興味を持つも、やり方がわからず断念。——この悔しさが大学の弾き語りにつながる。</li>
+      </ul>
+      <span class="era-highlight">熱中体質、ここで確立</span>
+    </div>
+
+    <div class="era-card reveal reveal-delay-2">
+      <div class="era-num">03</div>
+      <div class="era-period">High School</div>
+      <div class="era-title">テニス部から、受験一色へ。</div>
+      <ul class="era-items">
+        <li>テニス部に所属。<b>高2で引退</b>し受験に全集中。</li>
+        <li>数学が得意で、逆算型の勉強スタイルが確立されていく。</li>
+        <li>高3は受験に専念し、<b>大阪大学 基礎工学部に合格。</b></li>
+      </ul>
+      <span class="era-highlight">コツコツ型の原点</span>
+    </div>
+
+    <div class="era-card reveal reveal-delay-3">
+      <div class="era-num">04</div>
+      <div class="era-period">University</div>
+      <div class="era-title">歌にハマり、弾き語りを始めた4年間。</div>
+      <ul class="era-items">
+        <li>ステーキ屋・日本料理・おでん居酒屋と<b>飲食バイトを掛け持ち</b>。</li>
+        <li>歌を歌うことにハマり、<b>毎日カラオケに行く時期</b>もあった。</li>
+        <li>中学時代の挫折を経て<b>ギターで弾き語りを開始</b>。カラオケ動画をYouTubeに投稿し始める。</li>
+        <li>東京大学大学院を目指すも学力的に断念。自身の大学院研究にも注力。</li>
+      </ul>
+      <span class="era-highlight">挫折と再挑戦のループ</span>
+    </div>
+
+    <div class="era-card reveal reveal-delay-2">
+      <div class="era-num">05</div>
+      <div class="era-period">Graduate School</div>
+      <div class="era-title">就活 × 100万再生 × 資格勉強。</div>
+      <ul class="era-items">
+        <li>就活でコンサル業界を志望し、<b>BIG4（大手コンサルファーム）に内定。</b></li>
+        <li>就活中もYouTube投稿を継続。カラオケ動画で<b>単体30万回・総合100万回再生</b>を達成。</li>
+        <li>就活学生団体で<b>副支部長</b>を務め、支部内で<b>営業1位</b>に。</li>
+        <li>簿記2級・基本情報技術者試験・ITパスポート・<b>MOS Excel / Excel Expert</b> を取得。</li>
+      </ul>
+      <span class="era-highlight">並列処理のプロフェッショナル</span>
+    </div>
+
+    <div class="era-card reveal reveal-delay-3">
+      <div class="era-num">06</div>
+      <div class="era-period">Professional — Present</div>
+      <div class="era-title">IT×会計×AI、そして独立へ向けて。</div>
+      <ul class="era-items">
+        <li><b>SAPコンサルタント</b>として「IT×会計」を専門領域に活動中。</li>
+        <li><b>TOEIC 815点</b>を取得。グローバルな舞台を意識して英語を磨く。</li>
+        <li>資格支援事業を立ち上げ、企業との提携まで実現。しかし本業との両立に壁があり一時断念。——この悔しさを次の糧にしている。</li>
+        <li>公認会計士・AI Agent設計・英語と、<b>次のステージへ向けて動き出し中。</b></li>
+      </ul>
+      <span class="era-highlight">現在進行形</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="s-label reveal">05 — Contact</div>
+  <h2 class="s-title reveal reveal-delay-1">話しかけてみてください。</h2>
+  <div class="s-rule reveal reveal-delay-2"></div>
+  <div class="contact-inner reveal reveal-delay-3">
+    <div class="contact-left">
+      <p class="contact-quote">
+        仕事の話でも、<br>
+        音楽やインテリアの話でも、<br>
+        共通点があったらぜひ。
+      </p>
+    </div>
+    <div class="contact-right">
+      <a href="mailto:hello@example.com" class="contact-mail">hello@example.com</a>
+      <p class="contact-note">通常1〜2営業日以内にご返信します</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Y.T. — All rights reserved.</p>
+  <p>IT Consultant · Music Lover · Indoor Type</p>
+</footer>
+
+</body>
+<script>
+// ── Custom Cursor ──
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top  = my + 'px';
+});
+// ring follows with lag
+(function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursorRing.style.left = rx + 'px';
+  cursorRing.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+// expand ring on hoverable elements
+document.querySelectorAll('a, .chip, .wcard, .icard, .era-card, .hblock').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursorRing.style.width  = '50px';
+    cursorRing.style.height = '50px';
+    cursorRing.style.borderColor = 'rgba(184,132,58,0.7)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorRing.style.width  = '28px';
+    cursorRing.style.height = '28px';
+    cursorRing.style.borderColor = 'rgba(184,132,58,0.45)';
+  });
+});
+
+// ── Nav scroll class ──
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── Hero parallax rings ──
+const ring1 = document.getElementById('ring1');
+const ring2 = document.getElementById('ring2');
+const ring3 = document.getElementById('ring3');
+
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if(ring1) ring1.style.transform = `translateY(${y * 0.18}px)`;
+  if(ring2) ring2.style.transform = `translateY(${y * 0.28}px)`;
+  if(ring3) ring3.style.transform = `translateY(${y * 0.1}px) scale(${1 + y * 0.0002})`;
+}, {passive: true});
+
+// ── Scroll reveal for sections ──
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+  });
+}, {threshold: 0.12});
+reveals.forEach(el => io.observe(el));
+</script>
+</html>

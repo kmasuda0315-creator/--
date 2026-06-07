@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Section</title>
+  <style>
+    /* ── アーティスト行 ── */
+    .mitem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s, gap .2s;
+      user-select: none;
+    }
+    .mitem:hover { background: rgba(255,255,255,.05); gap: 14px; }
+    .mitem:hover .mdot { background: #ff0000; }
+
+    .mdot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #555;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    /* ── オーバーレイ ── */
+    .yt-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 999;
+    }
+    .yt-overlay.open {
+      display: block;
+      animation: ytFade .2s ease;
+    }
+
+    /* ── ボトムパネル ── */
+    .yt-panel {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(520px, 100vw);
+      background: #0f0f0f;
+      border-radius: 20px 20px 0 0;
+      padding: 10px 20px 36px;
+      z-index: 1000;
+      box-shadow: 0 -4px 60px rgba(0,0,0,.8);
+    }
+    .yt-panel.open {
+      display: block;
+      animation: ytSlide .32s cubic-bezier(.22,.61,.36,1);
+    }
+    .yt-handle {
+      width: 40px; height: 4px;
+      border-radius: 2px;
+      background: #333;
+      margin: 0 auto 18px;
+    }
+    .yt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .yt-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .yt-close {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: #222;
+      color: #888;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    .yt-close:hover { background: #333; color: #fff; }
+    .yt-embed {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      margin-bottom: 14px;
+    }
+    .yt-embed iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .yt-chbtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px;
+      background: #ff0000;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: .02em;
+      transition: background .2s;
+    }
+    .yt-chbtn:hover { background: #cc0000; }
+
+    @keyframes ytFade {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes ytSlide {
+      from { transform: translateX(-50%) translateY(100%); }
+      to   { transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ── デモ用ベーススタイル ── */
+    body {
+      background: #111;
+      color: #ccc;
+      font-family: sans-serif;
+      padding: 40px 20px;
+    }
+    .hblock { max-width: 520px; margin: 0 auto; }
+    .hblock-label {
+      font-size: 12px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #ff0000;
+      margin-bottom: 8px;
+    }
+    .hblock h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 12px;
+    }
+    .hblock p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #aaa;
+      margin: 0 0 20px;
+    }
+    .music-list { display: flex; flex-direction: column; gap: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- オーバーレイ -->
+  <div class="yt-overlay" id="yt-overlay" onclick="ytClose()"></div>
+
+  <!-- パネル -->
+  <div class="yt-panel" id="yt-panel">
+    <div class="yt-handle"></div>
+    <div class="yt-header">
+      <div class="yt-title">
+        <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+          <path d="M21.5 2.5a2.7 2.7 0 0 0-1.9-1.9C17.9.1 11 .1 11 .1S4.1.1 2.4.6A2.7 2.7 0 0 0 .5 2.5 29 29 0 0 0 0 8a29 29 0 0 0 .5 5.5 2.7 2.7 0 0 0 1.9 1.9c1.7.5 8.6.5 8.6.5s6.9 0 8.6-.5a2.7 2.7 0 0 0 1.9-1.9A29 29 0 0 0 22 8a29 29 0 0 0-.5-5.5ZM8.8 11V5l5.7 3-5.7 3Z" fill="#ff0000"/>
+        </svg>
+        <span id="yt-name"></span>
+      </div>
+      <button class="yt-close" onclick="ytClose()">✕</button>
+    </div>
+    <div class="yt-embed">
+      <iframe id="yt-iframe" src=""
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+    <a class="yt-chbtn" id="yt-chbtn" href="#" target="_blank" rel="noopener noreferrer">
+      チャンネルを開く →
+    </a>
+  </div>
+
+  <!-- Music ブロック -->
+  <div>
+    <div class="hblock">
+      <div class="hblock-label">Music</div>
+      <h3>聴くだけじゃ足りなくて、歌い始めた。</h3>
+      <p>心地よいメロディと、少し内省的な世界観が好きです。大学時代は毎日カラオケに通う時期もあり、中学の頃に断念したギターを独学で再挑戦して弾き語りを開始。カラオケ動画をYouTubeに投稿し、<b>単体30万回・総合100万回再生</b>を達成しました。夜、アロマを焚きながら弾くのが最高の時間。</p>
+      <div class="music-list">
+        <div class="mitem"
+          data-name="indigo la End"
+          data-video="aqoeNOw4_uQ"
+          data-url="https://www.youtube.com/channel/UCXKSbzihU5cu0U4qbbjB3GA"
+          onclick="ytOpen(this)">
+          <span class="mdot"></span>indigo la End
+        </div>
+        <div class="mitem"
+          data-name="レトロリロン"
+          data-video="EXbU-YdORqc"
+          data-url="https://www.youtube.com/@retroriron"
+          onclick="ytOpen(this)">
+          <span class="mdot"></span>レトロリロン
+        </div>
+        <div class="mitem"
+          data-name="Kiichi"
+          data-video="fJ26qxGeOTQ"
+          data-url="https://www.youtube.com/@kato_seigoro"
+          onclick="ytOpen(this)">
+          <span class="mdot"></span>Kiichi
+        </div>
+        <div class="mitem"
+          data-name="Penthouse"
+          data-video="ranKqdKHVUs"
+          data-url="https://www.youtube.com/c/Penthouse_tokyo"
+          onclick="ytOpen(this)">
+          <span class="mdot"></span>Penthouse
+        </div>
+        <div class="mitem"
+          data-name="菊池諒真"
+          data-playlist="UUbjogEQmfNVLHIa8Xb4MZuA"
+          data-url="https://www.youtube.com/@vivanzedenjp"
+          onclick="ytOpen(this)">
+          <span class="mdot"></span>菊池諒真
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function ytOpen(el) {
+      const { name, video, playlist, url } = el.dataset;
+      const src = video
+        ? `https://www.youtube.com/embed/${video}?autoplay=1&rel=0`
+        : `https://www.youtube.com/embed/videoseries?list=${playlist}&autoplay=1`;
+      document.getElementById('yt-name').textContent = name;
+      document.getElementById('yt-iframe').src = src;
+      document.getElementById('yt-chbtn').href = url;
+      document.getElementById('yt-overlay').classList.add('open');
+      document.getElementById('yt-panel').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function ytClose() {
+      document.getElementById('yt-overlay').classList.remove('open');
+      document.getElementById('yt-panel').classList.remove('open');
+      document.getElementById('yt-iframe').src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') ytClose();
+    });
+  </script>
+
+</body>
+</html>
